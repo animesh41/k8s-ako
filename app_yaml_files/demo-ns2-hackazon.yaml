@@ -1,0 +1,56 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: avihackazoning2-deployment
+  labels:
+    app: hackazon
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hackazon
+  template:
+    metadata:
+      labels:
+        app: hackazon
+    spec:
+      containers:
+      - name: hackazon
+        image: ianwijaya/hackazon
+        ports:
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: avihackazoning2-lb
+  labels:
+    svc: avihackazoning2-lb
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  selector:
+    app: hackazon
+  type: NodePort
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hackazoningress2
+spec:
+  ingressClassName: avi-lb
+  rules:
+  - host: hackazoning2.ako.avidemo.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: avihackazoning2-lb
+            port:
+              number: 80

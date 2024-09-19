@@ -1,0 +1,36 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: demol4-deployment
+  labels:
+    app: hackazon
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hackazon
+  template:
+    metadata:
+      labels:
+        app: hackazon
+    spec:
+      containers:
+      - name: hackazon
+        image: ianwijaya/hackazon
+        ports:
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: demol4-lb
+  labels:
+    svc: demol4-lb
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 80
+  selector:
+    app: hackazon
+  type: LoadBalancer
